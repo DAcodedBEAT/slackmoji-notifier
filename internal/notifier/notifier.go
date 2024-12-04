@@ -149,13 +149,13 @@ func (n *Notifier) handleNewEmoji(name, value string) {
 		},
 	}
 
-	log.Debug().Interface("messageContent", messageContent).Msg("sending message to Slack")
+	log.Debug().Interface("messageContent", messageContent).Msg("sending message to slack")
 
 	if err := n.slackClient.SendMessage(messageContent); err != nil {
-		log.Error().Err(err).Msg("failed to send message to Slack")
+		log.Error().Err(err).Msg("failed to send message to slack")
 		n.knownEmojis[name] = false
 	} else {
-		log.Debug().Msg("message sent successfully to Slack")
+		log.Debug().Msg("message sent successfully to slack")
 	}
 }
 
