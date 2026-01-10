@@ -42,7 +42,7 @@ func (n *Notifier) SetSlackClient(client slack.ClientInterface) {
 	n.slackClient = client
 }
 
-func (n *Notifier) HandleEvent(event interface{}) {
+func (n *Notifier) HandleEvent(event any) {
 	log.Debug().Interface("event", event).Msgf("notifier received event of type %T", event)
 
 	ctx := context.Background()
