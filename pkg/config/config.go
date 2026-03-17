@@ -16,7 +16,7 @@ const (
 	defaultOpenAIMaxTokens    = 1024
 	defaultOllamaModel        = "llama3.2:1b"
 	defaultOllamaBaseURL      = "http://localhost:11434"
-	defaultAnthropicModel     = "claude-3.5-haiku"
+	defaultAnthropicModel     = "claude-haiku-4-5-20251001"
 	defaultAnthropicMaxTokens = 1024
 	defaultGoogleAIModel      = "gemini-2.5-flash-lite"
 	defaultGoogleAIMaxTokens  = 1024
