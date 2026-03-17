@@ -130,6 +130,8 @@ func runListen(cmd *cobra.Command, args []string) {
 
 	slackClient.Stop()
 	log.Debug().Msg("Slack client stopped")
+	n.Stop()
+	log.Debug().Msg("notifier stopped")
 
 	select {
 	case <-shutdownCtx.Done():

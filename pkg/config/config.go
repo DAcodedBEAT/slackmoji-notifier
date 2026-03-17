@@ -71,10 +71,14 @@ func New() *Config {
 	logOnlyValue := os.Getenv("SLACK_LOG_ONLY")
 	if logOnlyValue == "" {
 		logOnlyValue = defaultSlackLogOnly
-	} else {
-		log.Info().Str("SLACK_LOG_ONLY", logOnlyValue).Msg("SLACK_LOG_ONLY explicitly set")
 	}
-	logOnly, _ := strconv.ParseBool(logOnlyValue)
+	logOnly, err := strconv.ParseBool(logOnlyValue)
+	if err != nil {
+		log.Warn().Err(err).Str("SLACK_LOG_ONLY", logOnlyValue).Msg("failed to parse SLACK_LOG_ONLY, defaulting to false")
+	}
+	if logOnly {
+		log.Info().Msg("SLACK_LOG_ONLY enabled: messages will be logged but not sent to Slack")
+	}
 	config.Slack.LogOnly = logOnly
 
 	log.Debug().Msg("setting LLM configuration")

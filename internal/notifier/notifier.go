@@ -25,6 +25,7 @@ type Notifier struct {
 	knownEmojis     map[string]bool
 	eventsMutex     sync.Mutex
 	logOnly         bool
+	done            chan struct{}
 }
 
 func New(llmClient llm.LLMClient, logOnly bool) *Notifier {
@@ -33,9 +34,14 @@ func New(llmClient llm.LLMClient, logOnly bool) *Notifier {
 		processedEvents: make(map[string]time.Time),
 		knownEmojis:     make(map[string]bool),
 		logOnly:         logOnly,
+		done:            make(chan struct{}),
 	}
 	n.startCleanupRoutine()
 	return n
+}
+
+func (n *Notifier) Stop() {
+	close(n.done)
 }
 
 func (n *Notifier) SetSlackClient(client slack.ClientInterface) {
@@ -203,6 +209,11 @@ func (n *Notifier) cleanupProcessedEvents() {
 			delete(n.processedEvents, id)
 		}
 	}
+	for name, known := range n.knownEmojis {
+		if !known {
+			delete(n.knownEmojis, name)
+		}
+	}
 	log.Debug().Msg("cleaned up processed events")
 }
 
@@ -210,8 +221,13 @@ func (n *Notifier) startCleanupRoutine() {
 	go func() {
 		ticker := time.NewTicker(eventThreshold)
 		defer ticker.Stop()
-		for range ticker.C {
-			n.cleanupProcessedEvents()
+		for {
+			select {
+			case <-n.done:
+				return
+			case <-ticker.C:
+				n.cleanupProcessedEvents()
+			}
 		}
 	}()
 }

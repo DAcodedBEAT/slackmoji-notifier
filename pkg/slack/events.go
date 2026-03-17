@@ -27,8 +27,16 @@ func (c *Client) ListenForEvents() error {
 	}()
 
 	go func() {
-		for evt := range c.socketClient.Events {
-			c.handleEvent(evt)
+		for {
+			select {
+			case <-c.stopChan:
+				return
+			case evt, ok := <-c.socketClient.Events:
+				if !ok {
+					return
+				}
+				c.handleEvent(evt)
+			}
 		}
 	}()
 
